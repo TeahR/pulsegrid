@@ -34,4 +34,5 @@ __pycache__/
 # Logs and temporary files
 *.log
 tmp/
-
+work/npm-cache/
+work/pip-cache/

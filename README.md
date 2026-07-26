@@ -40,7 +40,7 @@ displays them on the map.
 
 ## Documentation
 
+- [One-month product specification](docs/product-spec.md)
 - [Architecture](docs/architecture.md)
 - [Interview notes](docs/interview-notes.md)
 - [Project decisions](docs/decisions/)
-
