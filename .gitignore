@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+
+# Build output
+.next/
+dist/
+build/
+coverage/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+
+# Infrastructure
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Logs and temporary files
+*.log
+tmp/
+
