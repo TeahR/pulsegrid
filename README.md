@@ -9,9 +9,9 @@ The simulation environment provides repeatable traffic for testing the
 platform. The primary project is the event-driven system, its algorithms, and
 the operational dashboard.
 
-## First-month goal
+## Initial release goal
 
-Build and deploy a recruiter-ready beta where a visitor can:
+Build and deploy a working beta where a visitor can:
 
 1. Open a live city map.
 2. Start a marketplace scenario.
@@ -42,5 +42,5 @@ displays them on the map.
 
 - [One-month product specification](docs/product-spec.md)
 - [Architecture](docs/architecture.md)
-- [Interview notes](docs/interview-notes.md)
+- [Engineering notes](docs/engineering-notes.md)
 - [Project decisions](docs/decisions/)

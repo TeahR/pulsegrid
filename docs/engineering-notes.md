@@ -1,7 +1,7 @@
-# Interview Notes
+# Engineering Notes
 
-Use this document to explain the project in your own words. Update it after
-each feature.
+Use this document to record how the system works, why major decisions were
+made, and what was learned while implementing each feature.
 
 ## Project explanation
 
@@ -10,7 +10,7 @@ geospatial events in real time. Its simulation environment generates
 repeatable demand so dispatch and recommendation strategies can be tested
 under controlled conditions.
 
-## Questions to be able to answer
+## Design review questions
 
 1. What problem does PulseGrid solve?
 2. How does an order move through the system?
@@ -20,4 +20,3 @@ under controlled conditions.
 6. How does the system handle duplicate or failed events?
 7. What did load testing reveal?
 8. How would the design change at 100 times the traffic?
-
