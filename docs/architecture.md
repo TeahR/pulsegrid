@@ -5,9 +5,10 @@
 The first vertical slice will follow this path:
 
 1. PostgreSQL stores restaurant records and geographic coordinates.
-2. The API queries the database and returns restaurants over HTTP.
-3. The Next.js client requests those restaurants.
-4. The map renders a marker for each restaurant.
+2. SQLAlchemy opens a database session and queries the restaurant table.
+3. The API validates the results and returns restaurants over HTTP.
+4. The Next.js client requests those restaurants.
+5. The map renders a marker for each restaurant.
 
 Real-time marketplace events, asynchronous workers, and analytics will be
 introduced after this synchronous path works locally and in the cloud.
@@ -22,4 +23,3 @@ introduced after this synchronous path works locally and in the cloud.
 - Cloud Monitoring captures service health, latency, and errors.
 
 This document will evolve as implementation decisions are made.
-

@@ -29,8 +29,33 @@ Build and deploy a working beta where a visitor can:
 - Google Cloud Run and Pub/Sub
 - Docker and GitHub Actions
 
-The stack is provisional until each major choice is recorded in
-`docs/decisions/`.
+Major technical choices and their tradeoffs are recorded in `docs/decisions/`.
+
+## Local API setup
+
+Create and activate a Python virtual environment, then install the API
+dependencies:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r apps/api/requirements-dev.txt
+```
+
+Create a local PostgreSQL database, apply the schema migration, and load the
+demo restaurants:
+
+```bash
+createdb pulsegrid
+cd apps/api
+../../.venv/bin/alembic upgrade head
+PYTHONPATH=. ../../.venv/bin/python -m app.seed
+../../.venv/bin/uvicorn app.main:app --reload
+```
+
+If PostgreSQL requires credentials or runs elsewhere, export `DATABASE_URL`
+before running the migration, seed, and server commands. The expected format is
+shown in `apps/api/.env.example`.
 
 ## Repository status
 

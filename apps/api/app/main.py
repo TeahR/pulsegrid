@@ -1,43 +1,11 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
-
-class Restaurant(BaseModel):
-    id: str
-    name: str
-    cuisine: str
-    neighborhood: str
-    latitude: float
-    longitude: float
-
-
-RESTAURANTS = [
-    Restaurant(
-        id="restaurant-1",
-        name="Northstar Kitchen",
-        cuisine="New American",
-        neighborhood="Downtown",
-        latitude=40.7128,
-        longitude=-74.0060,
-    ),
-    Restaurant(
-        id="restaurant-2",
-        name="Saffron Route",
-        cuisine="Indian",
-        neighborhood="Midtown",
-        latitude=40.7549,
-        longitude=-73.9840,
-    ),
-    Restaurant(
-        id="restaurant-3",
-        name="Verde Street",
-        cuisine="Mexican",
-        neighborhood="Lower East Side",
-        latitude=40.7180,
-        longitude=-73.9885,
-    ),
-]
+from app.database import get_db
+from app.models import Restaurant
+from app.schemas import RestaurantRead
 
 app = FastAPI(
     title="PulseGrid API",
@@ -59,7 +27,6 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/api/v1/restaurants", response_model=list[Restaurant])
-def list_restaurants() -> list[Restaurant]:
-    return RESTAURANTS
-
+@app.get("/api/v1/restaurants", response_model=list[RestaurantRead])
+def list_restaurants(db: Session = Depends(get_db)) -> list[Restaurant]:
+    return list(db.scalars(select(Restaurant).order_by(Restaurant.name)))
