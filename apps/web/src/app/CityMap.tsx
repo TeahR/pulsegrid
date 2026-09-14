@@ -11,7 +11,7 @@ import {
 
 import type { Restaurant } from "@/lib/types";
 
-const MAP_STYLE = "https://tiles.openfreemap.org/styles/dark";
+const MAP_STYLE = "https://tiles.openfreemap.org/styles/positron";
 const NEW_YORK: [number, number] = [-74.006, 40.7128];
 
 export function CityMap({ restaurants }: { restaurants: Restaurant[] }) {
@@ -38,7 +38,7 @@ export function CityMap({ restaurants }: { restaurants: Restaurant[] }) {
           restaurant.latitude,
         ];
 
-        new Marker({ color: "#6fffc1" })
+        new Marker({ color: "#176b52" })
           .setLngLat(coordinates)
           .setPopup(
             new Popup({ offset: 24 }).setText(
@@ -59,10 +59,6 @@ export function CityMap({ restaurants }: { restaurants: Restaurant[] }) {
   return (
     <div className="mapShell">
       <div ref={containerRef} className="cityMap" aria-label="Restaurant map" />
-      <div className="mapLabel">
-        <span>Live city view</span>
-        <strong>{restaurants.length} locations mapped</strong>
-      </div>
     </div>
   );
 }
