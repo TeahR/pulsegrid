@@ -22,7 +22,7 @@ Build and deploy a working beta where a visitor can:
 
 ## Planned stack
 
-- Next.js and TypeScript
+- Next.js, TypeScript, and MapLibre
 - Python API
 - PostgreSQL with PostGIS
 - WebSockets

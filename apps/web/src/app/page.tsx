@@ -1,11 +1,5 @@
-type Restaurant = {
-  id: string;
-  name: string;
-  cuisine: string;
-  neighborhood: string;
-  latitude: number;
-  longitude: number;
-};
+import { CityMap } from "./CityMap";
+import type { Restaurant } from "@/lib/types";
 
 async function getRestaurants(): Promise<Restaurant[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -66,13 +60,7 @@ export default async function Home() {
       </section>
 
       <section className="workspace">
-        <div className="mapPlaceholder">
-          <div className="gridGlow" />
-          <div className="mapLabel">
-            <span>Live city view</span>
-            <strong>Map integration comes next</strong>
-          </div>
-        </div>
+        <CityMap restaurants={restaurants} />
 
         <aside>
           <div className="panelHeading">
@@ -111,4 +99,3 @@ export default async function Home() {
     </main>
   );
 }
-

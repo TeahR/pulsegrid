@@ -5,12 +5,13 @@
     "apps/web"
   ],
   "overrides": {
+    "nanoid": "3.3.18",
     "postcss": "8.5.23",
-    "sharp": "0.35.3"
+    "sharp": "0.35.4"
   },
   "dependencies": {
     "postcss": "8.5.23",
-    "sharp": "0.35.3"
+    "sharp": "0.35.4"
   },
   "scripts": {
     "dev:web": "npm --workspace @pulsegrid/web run dev",
