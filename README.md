@@ -63,6 +63,30 @@ PulseGrid is in active development. The first milestone is a deployed vertical
 slice that loads restaurant locations from PostgreSQL through the API and
 displays them on the map.
 
+## Automated checks
+
+GitHub Actions runs frontend lint and a production build, API unit tests, and
+a PostgreSQL integration check on pushes to `main` and pull requests. The
+database check applies migrations, checks for schema drift, seeds twice to
+verify repeatability, and reads the stored records through the API.
+
+Run the fast checks locally:
+
+```bash
+npm run lint:web
+npm run build:web
+.venv/bin/pytest
+```
+
+The integration test is separate from the default test suite. Run it only
+against a disposable database after applying migrations and seeding twice:
+
+```bash
+PYTHONPATH=apps/api .venv/bin/pytest apps/api/integration
+```
+
+Set `DATABASE_URL` to that database for the migration, seed, and test commands.
+
 ## Documentation
 
 - [One-month product specification](docs/product-spec.md)

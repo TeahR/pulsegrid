@@ -10,6 +10,19 @@ geospatial events in real time. Its simulation environment generates
 repeatable demand so dispatch and recommendation strategies can be tested
 under controlled conditions.
 
+## Automated verification
+
+The default API tests use isolated SQLite tables for fast, repeatable feedback.
+That does not establish compatibility with PostgreSQL. A separate GitHub
+Actions check starts disposable PostgreSQL, applies the actual migrations,
+checks model/schema consistency, and verifies seeded records through FastAPI
+without replacing its database dependency. Running the seed twice catches
+duplicate-record failures. Frontend lint and builds run in a separate job so
+neither side has to wait for the other.
+
+These checks verify current behavior, not dispatch correctness, load capacity,
+or visual layout. Those need their own tests as those features are implemented.
+
 ## Design review questions
 
 1. What problem does PulseGrid solve?

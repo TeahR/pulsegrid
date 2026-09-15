@@ -1,0 +1,66 @@
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: Frontend lint and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint:web
+      - run: npm run build:web
+
+  api:
+    name: API tests and PostgreSQL integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: pulsegrid
+          POSTGRES_PASSWORD: test-only-password
+          POSTGRES_DB: pulsegrid_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pulsegrid -d pulsegrid_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://pulsegrid:test-only-password@localhost:5432/pulsegrid_test
+      PYTHONPATH: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: apps/api/requirements*.txt
+      - run: pip install -r apps/api/requirements-dev.txt
+      - name: Run isolated API tests
+        run: pytest
+      - name: Apply migrations and check model consistency
+        run: |
+          alembic -c apps/api/alembic.ini upgrade head
+          alembic -c apps/api/alembic.ini check
+      - name: Seed twice to check repeatability
+        run: |
+          python -m app.seed
+          python -m app.seed
+      - name: Verify persisted data through the API
+        run: pytest apps/api/integration
