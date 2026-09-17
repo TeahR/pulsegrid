@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -10,3 +13,10 @@ class RestaurantRead(BaseModel):
     neighborhood: str
     latitude: float
     longitude: float
+
+
+class OrderRead(BaseModel):
+    id: str
+    restaurant_name: str
+    status: Literal["queued", "assigned", "delivered"]
+    created_at: datetime

@@ -6,3 +6,10 @@ export type Restaurant = {
   latitude: number;
   longitude: number;
 };
+
+export type Order = {
+  id: string;
+  restaurant_name: string;
+  status: "queued" | "assigned" | "delivered";
+  created_at: string;
+};

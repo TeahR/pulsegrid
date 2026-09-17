@@ -1,7 +1,9 @@
+from datetime import datetime, timedelta, timezone
+
 from sqlalchemy import select
 
 from app.database import SessionLocal
-from app.models import Restaurant
+from app.models import Order, Restaurant
 
 
 RESTAURANTS = [
@@ -40,6 +42,25 @@ def seed() -> None:
             for restaurant in RESTAURANTS
             if restaurant.id not in existing_ids
         )
+        session.flush()
+
+        existing_order_ids = set(session.scalars(select(Order.id)))
+        now = datetime.now(timezone.utc)
+        orders = [
+            Order(
+                id="order-1",
+                restaurant_id="restaurant-1",
+                status="assigned",
+                created_at=now - timedelta(minutes=12),
+            ),
+            Order(
+                id="order-2",
+                restaurant_id="restaurant-2",
+                status="queued",
+                created_at=now - timedelta(minutes=4),
+            ),
+        ]
+        session.add_all(order for order in orders if order.id not in existing_order_ids)
 
 
 if __name__ == "__main__":

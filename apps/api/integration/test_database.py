@@ -20,3 +20,14 @@ def test_api_reads_seeded_database() -> None:
     assert len({restaurant["id"] for restaurant in restaurants}) == 3
     assert all(-90 <= restaurant["latitude"] <= 90 for restaurant in restaurants)
     assert all(-180 <= restaurant["longitude"] <= 180 for restaurant in restaurants)
+
+
+def test_api_reads_seeded_orders() -> None:
+    with TestClient(app) as client:
+        response = client.get("/api/v1/orders")
+
+    assert response.status_code == 200
+    assert [(order["id"], order["restaurant_name"], order["status"]) for order in response.json()] == [
+        ("order-2", "Saffron Route", "queued"),
+        ("order-1", "Northstar Kitchen", "assigned"),
+    ]

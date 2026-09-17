@@ -42,8 +42,8 @@ source .venv/bin/activate
 pip install -r apps/api/requirements-dev.txt
 ```
 
-Create a local PostgreSQL database, apply the schema migration, and load the
-demo restaurants:
+Create a local PostgreSQL database, apply the schema migrations, and load the
+demo restaurants and orders:
 
 ```bash
 createdb pulsegrid
@@ -59,9 +59,9 @@ shown in `apps/api/.env.example`.
 
 ## Repository status
 
-PulseGrid is in active development. The first milestone is a deployed vertical
-slice that loads restaurant locations from PostgreSQL through the API and
-displays them on the map.
+PulseGrid is in active development. The dashboard currently loads restaurant
+locations and demo orders from PostgreSQL through the API. Orders are stored
+but do not yet update automatically; simulation and dispatch are later steps.
 
 ## Automated checks
 

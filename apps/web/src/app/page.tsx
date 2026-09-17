@@ -1,31 +1,41 @@
 import { CityMap } from "./CityMap";
-import type { Restaurant } from "@/lib/types";
+import type { Order, Restaurant } from "@/lib/types";
 
-type RestaurantResponse = {
-  restaurants: Restaurant[];
-  apiAvailable: boolean;
-};
+const orderTimeFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "America/New_York",
+});
 
-async function getRestaurants(): Promise<RestaurantResponse> {
+async function getApiData<T>(path: string): Promise<T | null> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
   try {
-    const response = await fetch(`${apiUrl}/api/v1/restaurants`, {
+    const response = await fetch(`${apiUrl}${path}`, {
       cache: "no-store",
     });
 
     if (!response.ok) {
-      throw new Error(`Restaurant request failed: ${response.status}`);
+      return null;
     }
 
-    return { restaurants: await response.json(), apiAvailable: true };
+    return await response.json();
   } catch {
-    return { restaurants: [], apiAvailable: false };
+    return null;
   }
 }
 
 export default async function Home() {
-  const { restaurants, apiAvailable } = await getRestaurants();
+  const [restaurantData, orderData] = await Promise.all([
+    getApiData<Restaurant[]>("/api/v1/restaurants"),
+    getApiData<Order[]>("/api/v1/orders"),
+  ]);
+  const restaurants = restaurantData ?? [];
+  const orders = orderData ?? [];
+  const apiAvailable = restaurantData !== null && orderData !== null;
+  const activeOrders = orders.filter((order) => order.status !== "delivered");
 
   return (
     <>
@@ -39,7 +49,7 @@ export default async function Home() {
           <nav aria-label="Primary navigation">
             <a className="active" href="#overview">Overview</a>
             <a href="#locations">Locations</a>
-            <a href="#activity">Activity</a>
+            <a href="#orders">Orders</a>
           </nav>
 
           <div className={`connection ${apiAvailable ? "online" : ""}`}>
@@ -67,8 +77,8 @@ export default async function Home() {
           </article>
           <article>
             <span>Active orders</span>
-            <strong>0</strong>
-            <small>No orders in progress</small>
+            <strong>{activeOrders.length}</strong>
+            <small>{orderData === null ? "Waiting for API" : "Demo order records"}</small>
           </article>
           <article>
             <span>Median delivery time</span>
@@ -117,24 +127,37 @@ export default async function Home() {
           </aside>
         </section>
 
-        <section className="panel activityPanel" id="activity">
+        <section className="panel activityPanel" id="orders">
           <div className="panelHeader">
             <div>
-              <h2>Recent activity</h2>
-              <p>Order and dispatch events will appear here</p>
+              <h2>Recent orders</h2>
+              <p>Most recent demo orders from the database</p>
             </div>
           </div>
           <div className="tableWrapper">
             <table>
               <thead>
-                <tr><th>Time</th><th>Event</th><th>Location</th><th>Status</th></tr>
+                <tr><th>Time</th><th>Order</th><th>Restaurant</th><th>Status</th></tr>
               </thead>
               <tbody>
-                <tr>
-                  <td colSpan={4} className="tableEmpty">
-                    No marketplace activity yet. Events will appear when the simulation starts.
-                  </td>
-                </tr>
+                {orders.length ? orders.map((order) => (
+                  <tr key={order.id}>
+                    <td>
+                      <time dateTime={order.created_at}>
+                        {orderTimeFormatter.format(new Date(order.created_at))}
+                      </time>
+                    </td>
+                    <td>{order.id}</td>
+                    <td>{order.restaurant_name}</td>
+                    <td><span className={`orderStatus ${order.status}`}>{order.status}</span></td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan={4} className="tableEmpty">
+                      {orderData === null ? "Start the API to load orders." : "No orders yet."}
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
