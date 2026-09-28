@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
@@ -5,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import Order, Restaurant
-from app.schemas import OrderRead, RestaurantRead
+from app.schemas import OrderRead, OrderStatus, RestaurantRead
 
 app = FastAPI(
     title="PulseGrid API",
@@ -33,12 +35,18 @@ def list_restaurants(db: Session = Depends(get_db)) -> list[Restaurant]:
 
 
 @app.get("/api/v1/orders", response_model=list[OrderRead])
-def list_orders(db: Session = Depends(get_db)) -> list[OrderRead]:
-    rows = db.execute(
+def list_orders(
+    status: Optional[OrderStatus] = None,
+    db: Session = Depends(get_db),
+) -> list[OrderRead]:
+    query = (
         select(Order, Restaurant.name)
         .join(Restaurant, Order.restaurant_id == Restaurant.id)
         .order_by(Order.created_at.desc(), Order.id)
     )
+    if status is not None:
+        query = query.where(Order.status == status)
+    rows = db.execute(query)
     return [
         OrderRead(
             id=order.id,

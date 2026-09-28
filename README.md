@@ -63,6 +63,11 @@ PulseGrid is in active development. The dashboard currently loads restaurant
 locations and demo orders from PostgreSQL through the API. Orders are stored
 but do not yet update automatically; simulation and dispatch are later steps.
 
+The orders endpoint returns newest orders first. Use
+`GET /api/v1/orders?status=queued` to filter by `queued`, `assigned`, or
+`delivered`. Omitting `status` returns all orders; an unsupported status returns
+HTTP 422, and a filter with no matching orders returns an empty list.
+
 ## Automated checks
 
 GitHub Actions runs frontend lint and a production build, API unit tests, and

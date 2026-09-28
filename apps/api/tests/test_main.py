@@ -1,6 +1,7 @@
 from collections.abc import Generator
 from datetime import datetime, timezone
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -119,3 +120,42 @@ def test_list_orders_returns_empty_list_without_rows() -> None:
 
     assert response.status_code == 200
     assert response.json() == []
+
+
+@pytest.mark.parametrize("status", ["queued", "assigned", "delivered"])
+def test_list_orders_filters_status_and_preserves_order(status: str) -> None:
+    with Session(engine) as session:
+        session.add(Restaurant(
+            id="restaurant-1", name="Northstar Kitchen", cuisine="New American",
+            neighborhood="Downtown", latitude=40.7128, longitude=-74.0060,
+        ))
+        session.flush()
+        for order_status in ("queued", "assigned", "delivered"):
+            for index in (1, 2):
+                session.add(Order(
+                    id=f"{order_status}-{index}", restaurant_id="restaurant-1",
+                    status=order_status,
+                    created_at=datetime(2026, 9, 17, 12, index, tzinfo=timezone.utc),
+                ))
+        session.commit()
+
+    response = client.get("/api/v1/orders", params={"status": status})
+
+    assert response.status_code == 200
+    assert [order["id"] for order in response.json()] == [f"{status}-2", f"{status}-1"]
+    assert all(order["status"] == status for order in response.json())
+
+
+def test_list_orders_filter_without_matches_returns_empty_list() -> None:
+    response = client.get("/api/v1/orders", params={"status": "queued"})
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+@pytest.mark.parametrize("status", ["pending", "QUEUED", ""])
+def test_list_orders_rejects_invalid_status(status: str) -> None:
+    response = client.get("/api/v1/orders", params={"status": status})
+
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["loc"] == ["query", "status"]

@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
+OrderStatus = Literal["queued", "assigned", "delivered"]
+
 
 class RestaurantRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -18,5 +20,5 @@ class RestaurantRead(BaseModel):
 class OrderRead(BaseModel):
     id: str
     restaurant_name: str
-    status: Literal["queued", "assigned", "delivered"]
+    status: OrderStatus
     created_at: datetime
